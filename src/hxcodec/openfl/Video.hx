@@ -191,36 +191,32 @@ class Video extends Bitmap
 	}
 
 	// Methods
-	public function play(location:String, shouldLoop:Bool = false):Int
+	public function load(location:String, shouldLoop:Bool = false)
 	{
-		if (location != null && location.indexOf('://') != -1)
-			mediaItem = LibVLC.media_new_location(instance, location);
-		else if (location != null)
-		{
-			#if windows
-			mediaItem = LibVLC.media_new_path(instance, Path.normalize(location).split("/").join("\\"));
-			#else
-			mediaItem = LibVLC.media_new_path(instance, Path.normalize(location));
-			#end
-		}
-		else
-			return -1;
+	    if (location != null && location.indexOf('://') != -1)
+	        mediaItem = LibVLC.media_new_location(instance, location);
+	    else if (location != null)
+	    {
+	        mediaItem = LibVLC.media_new_path(instance, #if windows Path.normalize(location).split("/").join("\\") #else Path.normalize(location) #end);
+	    }
+	    LibVLC.media_add_option(mediaItem, shouldLoop ? "input-repeat=65535" : "input-repeat=0");
 
-		LibVLC.media_add_option(mediaItem, shouldLoop ? "input-repeat=65535" : "input-repeat=0");
+	    if (mediaPlayer != null)
+	        LibVLC.media_player_set_media(mediaPlayer, mediaItem);
+	    else
+	        mediaPlayer = LibVLC.media_player_new_from_media(mediaItem);
 
-		if (mediaPlayer != null)
-			LibVLC.media_player_set_media(mediaPlayer, mediaItem);
-		else
-			mediaPlayer = LibVLC.media_player_new_from_media(mediaItem);
+	    LibVLC.media_release(mediaItem);
 
-		LibVLC.media_release(mediaItem);
+	    LibVLC.video_set_format_callbacks(mediaPlayer, untyped __cpp__('format_setup'), untyped __cpp__('NULL'));
+	    LibVLC.video_set_callbacks(mediaPlayer, untyped __cpp__('lock'), untyped __cpp__('NULL'), untyped __cpp__('NULL'), untyped __cpp__('this'));
 
-		LibVLC.video_set_format_callbacks(mediaPlayer, untyped __cpp__('format_setup'), untyped __cpp__('NULL'));
-		LibVLC.video_set_callbacks(mediaPlayer, untyped __cpp__('lock'), untyped __cpp__('NULL'), untyped __cpp__('NULL'), untyped __cpp__('this'));
+	    attachEvents();
+	}
 
-		attachEvents();
-
-		return LibVLC.media_player_play(mediaPlayer);
+	public function play():Int
+	{
+	    return LibVLC.media_player_play(mediaPlayer);
 	}
 
 	public function stop():Void
