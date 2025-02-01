@@ -24,7 +24,7 @@ class FlxVideoSprite extends FlxSprite
 
 		bitmap = new Video();
 		bitmap.alpha = 0;
-		bitmap.onOpening.add(function()
+		bitmap.onOpening.add(() ->
 		{
 			#if FLX_SOUND_SYSTEM
 			bitmap.volume = Std.int((FlxG.sound.muted ? 0 : 1) * (FlxG.sound.volume * 100));
@@ -35,7 +35,7 @@ class FlxVideoSprite extends FlxSprite
 	}
 
 	// Methods
-	public function play(location:String, shouldLoop:Bool = false):Int
+	public function load(location:String, shouldLoop:Bool = false):Int
 	{
 		if (FlxG.autoPause)
 		{
@@ -49,12 +49,17 @@ class FlxVideoSprite extends FlxSprite
 		if (bitmap != null)
 		{
 			if (FileSystem.exists(Sys.getCwd() + location))
-				return bitmap.play(Sys.getCwd() + location, shouldLoop);
+				return bitmap.load(Sys.getCwd() + location, shouldLoop);
 			else
-				return bitmap.play(location, shouldLoop);
+				return bitmap.load(location, shouldLoop);
 		}
 		else
 			return -1;
+	}
+
+	public function play():Int
+	{
+	    return bitmap != null ? bitmap.play() : -1;
 	}
 
 	public function stop():Void
