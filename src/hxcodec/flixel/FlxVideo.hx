@@ -15,7 +15,7 @@ class FlxVideo extends Video
 	{
 		super();
 
-		onOpening.add(() ->
+		onOpening.add(function()
 		{
 			#if FLX_SOUND_SYSTEM
 			volume = Std.int((FlxG.sound.muted ? 0 : 1) * (FlxG.sound.volume * 100));
@@ -25,7 +25,7 @@ class FlxVideo extends Video
 		FlxG.addChildBelowMouse(this);
 	}
 
-	override public function load(location:String, shouldLoop:Bool = false):Void
+	override public function play(location:String, shouldLoop:Bool = false):Int
 	{
 		if (FlxG.autoPause)
 		{
@@ -39,9 +39,9 @@ class FlxVideo extends Video
 		FlxG.stage.addEventListener(Event.ENTER_FRAME, onEnterFrame);
 
 		if (FileSystem.exists(Sys.getCwd() + location))
-			load(Sys.getCwd() + location, shouldLoop);
+			return super.play(Sys.getCwd() + location, shouldLoop);
 		else
-			load(location, shouldLoop);
+			return super.play(location, shouldLoop);
 	}
 
 	override public function dispose():Void
