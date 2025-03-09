@@ -40,7 +40,7 @@ class FlxVideoBackdrop extends FlxBackdrop
 	}
 
 	// Methods
-	public function play(location:String, shouldLoop:Bool = false):Int
+	public function load(location:String, shouldLoop:Bool = false):Int
 	{
 		if (FlxG.autoPause)
 		{
@@ -54,12 +54,17 @@ class FlxVideoBackdrop extends FlxBackdrop
 		if (bitmap != null)
 		{
 			if (FileSystem.exists(Sys.getCwd() + location))
-				return bitmap.play(Sys.getCwd() + location, shouldLoop);
+				return bitmap.load(Sys.getCwd() + location, shouldLoop);
 
-			return bitmap.play(location, shouldLoop);
+			return bitmap.load(location, shouldLoop);
 		}
 
 		return -1;
+	}
+
+	public function play():Int
+	{
+		return bitmap != null ? bitmap.play() : -1;
 	}
 
 	public function stop():Void
